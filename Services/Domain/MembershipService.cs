@@ -19,9 +19,11 @@ namespace BaffleTalk.Services.Domain
 
         public bool GetUserEmailAlreadyExists(string email)
         {
+            if (String.IsNullOrWhiteSpace(email)) throw new ArgumentNullException("email");
+
             IQueryable<User> users =
                 from u in _context.Users
-                where u.Email == email
+                where u.Email == email.Trim()
                 select u;
 
             return users.Any();
@@ -29,9 +31,11 @@ namespace BaffleTalk.Services.Domain
 
         public bool GetUserUniqueNameAlreadyExists(string uniqueName)
         {
+            if (String.IsNullOrWhiteSpace(uniqueName)) throw new ArgumentNullException("uniqueName");
+
             IQueryable<User> users =
                 from u in _context.Users
-                where u.UniqueName == uniqueName
+                where u.UniqueName == uniqueName.Trim()
                 select u;
 
             return users.Any();
