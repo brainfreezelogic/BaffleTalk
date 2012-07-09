@@ -10,30 +10,29 @@ namespace BaffleTalk.Services.Domain.Tests
     [SetUpFixture]
     public class SetUpFixture
     {
-        private BaffleTalkContext _context;
-
         [SetUp]
-        public void TestFixtureSetUp()
+        public void SetUp()
         {
-            _context = new BaffleTalkContext();
+            using (var startupContext = new BaffleTalkContext())
+            {
+                //var dateTimeService = _builder.Container.Resolve<IDateTimeService>(new NamedParameter("referenceDateTime", new DateTime(2012, 7, 5, 11, 05, 23)));
+                var dateTimeService = new MockStaticDateTimeService(new DateTime(2012, 7, 5, 11, 05, 23));
 
-            //var dateTimeService = _builder.Container.Resolve<IDateTimeService>(new NamedParameter("referenceDateTime", new DateTime(2012, 7, 5, 11, 05, 23)));
-            var dateTimeService = new MockStaticDateTimeService(new DateTime(2012, 7, 5, 11, 05, 23));
+                Database.SetInitializer(new ForceDeleteInitializer(new DropCreateDatabaseAlways<BaffleTalkContext>()));
 
-            Database.SetInitializer(new DropCreateDatabaseAlways<BaffleTalkContext>());
+                var user = new User
+                {
+                    Email = "jerad@jader201.com",
+                    PasswordHash = "hash",
+                    PasswordSalt = "salt",
+                    DisplayName = "Jerad",
+                    UniqueName = "jader201",
+                    BirthDate = new DateTime(1974, 10, 12),
+                    DateCreated = dateTimeService.UtcNow,
+                };
 
-            var user = new User
-                           {
-                               Email = "jerad@jader201.com",
-                               PasswordHash = "hash",
-                               PasswordSalt = "salt",
-                               DisplayName = "Jerad",
-                               UniqueName = "jader201",
-                               DateCreated = dateTimeService.Now,
-                           };
-
-            _context.Users.Add(user);
-            _context.SaveChanges();
+                startupContext.Users.Add(user);
+            }
         }
     }
 }

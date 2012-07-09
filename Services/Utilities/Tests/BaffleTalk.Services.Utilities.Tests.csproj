@@ -49,10 +49,25 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="PasswordHashServiceTests\HashPassword.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Interfaces\BaffleTalk.Common.Interfaces.csproj">
+      <Project>{395B4FBA-3DFF-4B12-BBD6-AC01FD40EFF6}</Project>
+      <Name>BaffleTalk.Common.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BaffleTalk.Services.Utilities.csproj">
+      <Project>{1220B220-9374-412E-8071-D9F00B1C5370}</Project>
+      <Name>BaffleTalk.Services.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Mock\BaffleTalk.Services.Utilities.Mock.csproj">
+      <Project>{1D154A17-9C16-438A-BB4F-94FF7E729F57}</Project>
+      <Name>BaffleTalk.Services.Utilities.Mock</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

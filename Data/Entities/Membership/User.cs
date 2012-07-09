@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaffleTalk.Data.Entities.Membership
 {
@@ -12,6 +8,7 @@ namespace BaffleTalk.Data.Entities.Membership
         public string Email { get; set; }
         public string UniqueName { get; set; }
         public string DisplayName { get; set; }
+        public DateTime BirthDate { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public DateTime DateCreated { get; set; }

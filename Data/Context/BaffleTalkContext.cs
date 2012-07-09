@@ -1,13 +1,23 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using BaffleTalk.Data.Entities.Membership;
 
 namespace BaffleTalk.Data.Context
 {
-    public class BaffleTalkContext : DbContext
+    public class BaffleTalkContext : DbContext, IDisposable
     {
+        private readonly bool rollbackOnDispose;
+
         public DbSet<User> Users { get; set; }
         public DbSet<UserOathData> UserOathData { get; set; }
         public DbSet<OauthProvider> OauthProvider { get; set; }
+
+        public BaffleTalkContext() : this(false) { }
+
+        public BaffleTalkContext(bool rollbackOnDispose)
+        {
+            this.rollbackOnDispose = rollbackOnDispose;
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -53,6 +63,17 @@ namespace BaffleTalk.Data.Context
                 .IsRequired();
 
             #endregion
+        }
+
+        public void Commit()
+        {
+            SaveChanges();
+        }
+
+        public new void Dispose()
+        {
+            if (!rollbackOnDispose) SaveChanges();
+            base.Dispose();
         }
     }
 }

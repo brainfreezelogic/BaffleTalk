@@ -1,48 +1,48 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace BaffleTalk.Services.Domain.Tests.Membership
+namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
 {
     [TestFixture]
-    public class GetUserUniqueNameAlreadyExists : MembershipFixtureBase
+    public class GetUserUniqueNameAlreadyExists : SignupServiceTests._FixtureBase
     {
         [Test]
         public void MustReturnTrueWhenUniqueNameExists()
         {
-            bool actual = MembershipService.GetUserUniqueNameAlreadyExists("jader201");
+            bool actual = SignupService.GetUserUniqueNameAlreadyExists("jader201");
             Assert.AreEqual(true, actual);
         }
 
         [Test]
         public void MustReturnTrueWhenTrimmedUniqueNameExists()
         {
-            bool actual = MembershipService.GetUserUniqueNameAlreadyExists(" jader201 ");
+            bool actual = SignupService.GetUserUniqueNameAlreadyExists(" jader201 ");
             Assert.AreEqual(true, actual);
         }
 
         [Test]
         public void MustReturnFalseWhenUniqueNameDoesNotExist()
         {
-            bool actual = MembershipService.GetUserUniqueNameAlreadyExists("nonexistentname");
+            bool actual = SignupService.GetUserUniqueNameAlreadyExists("nonexistentname");
             Assert.AreEqual(false, actual);
         }
 
         [Test]
         public void MustThrowNullArgumentExceptionWhenNull()
         {
-            Assert.Throws<ArgumentNullException>(() => MembershipService.GetUserUniqueNameAlreadyExists(null));
+            Assert.Throws<ArgumentNullException>(() => SignupService.GetUserUniqueNameAlreadyExists(null));
         }
 
         [Test]
         public void MustThrowNullArgumentExceptionWhenEmpty()
         {
-            Assert.Throws<ArgumentNullException>(() => MembershipService.GetUserUniqueNameAlreadyExists(String.Empty));
+            Assert.Throws<ArgumentNullException>(() => SignupService.GetUserUniqueNameAlreadyExists(String.Empty));
         }
 
         [Test]
         public void MustThrowNullArgumentExceptionWhenWhiteSpace()
         {
-            Assert.Throws<ArgumentNullException>(() => MembershipService.GetUserUniqueNameAlreadyExists(" "));
+            Assert.Throws<ArgumentNullException>(() => SignupService.GetUserUniqueNameAlreadyExists(" "));
         }
     }
 }

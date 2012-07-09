@@ -40,6 +40,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DateTimeService.cs" />
+    <Compile Include="GuidService.cs" />
+    <Compile Include="PasswordHashService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
