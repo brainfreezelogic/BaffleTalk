@@ -1,39 +1,37 @@
 ﻿using System;
-using BaffleTalk.Common.Interfaces.Services.Utilities;
-using BaffleTalk.Services.Utilities.Mock;
 using NUnit.Framework;
 
 namespace BaffleTalk.Services.Utilities.Tests.PasswordHashServiceTests
 {
     [TestFixture]
-    public class HashPassword
+    public class HashPassword : _FixtureBase
     {
-        private IPasswordHashService passwordHashService;
-        private Guid userGuid;
-
-        [SetUp]
-        public void SetUp()
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenEmptyGuid()
         {
-            passwordHashService = new PasswordHashService();
-            userGuid = new Guid("{59399537-C9FE-415B-8D8D-FC1636781A5D}");
+            Assert.Throws<ArgumentNullException>(() => MockPasswordHashService.HashPassword(null, Guid.Empty));
         }
 
         [Test]
         public void ShouldThrowNullArgumentExceptionWhenNullPassword()
         {
-            Assert.Throws<ArgumentNullException>(() => passwordHashService.HashPassword(null, userGuid));
+            Assert.Throws<ArgumentNullException>(() => MockPasswordHashService.HashPassword(null, UserGuid));
         }
 
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenEmptyGuid()
+        public void ShouldReturnCorrectMockHashWhenValidParameters()
         {
-            Assert.Throws<ArgumentNullException>(() => passwordHashService.HashPassword(null, Guid.Empty));
+            string actual = System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(MockPasswordHashService.HashPassword(Password, UserGuid)));
+
+            Assert.AreEqual(ExpectedMockHash, actual);
         }
 
         [Test]
-        public void ShouldReturnCorrectHashWhenValidParameters()
+        public void ShouldReturnCorrectRfc2898HashWhenValidParameters()
         {
-            //var actual = 
+            string actual = Rfc2898PasswordHashService.HashPassword(Password, UserGuid);
+
+            Assert.AreEqual(ExpectedRfc2898Hash, actual);
         }
     }
 }

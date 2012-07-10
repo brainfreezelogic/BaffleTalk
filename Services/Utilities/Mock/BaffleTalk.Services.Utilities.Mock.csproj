@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MockDeriveKey.cs" />
     <Compile Include="MockGuidService.cs" />
     <Compile Include="MockSlidingDateTimeService.cs" />
     <Compile Include="MockStaticDateTimeService.cs" />

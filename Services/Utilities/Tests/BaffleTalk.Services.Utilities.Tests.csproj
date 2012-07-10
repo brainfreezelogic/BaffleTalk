@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\..\..\Solution\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\Solution\packages\NUnit.2.6.0.12054\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -49,7 +52,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="PasswordHashServiceTests\VerifyPassword.cs" />
     <Compile Include="PasswordHashServiceTests\HashPassword.cs" />
+    <Compile Include="PasswordHashServiceTests\_FixtureBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
