@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using BaffleTalk.Common.Interfaces.Services.Utilities;
 using BaffleTalk.Data.Entities.Membership;
+using Moq;
 using NUnit.Framework;
 
 namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
@@ -16,14 +18,15 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
         {
             expectedUser = new User
                                {
+                                   Guid = UserGuid,
                                    UniqueName = "uniqueGuy",
                                    DisplayName = "Unique Guy",
                                    BirthDate = new DateTime(1990, 1, 20),
                                    Email = "uniqueguy@gmail.com",
                                    DateCreated = DateTimeService.UtcNow,
-                                   PasswordHash = "somehash",
-                                   PasswordSalt = "somesalt"
+                                   PasswordHash = "saltysomepassword",
                                };
+
             expectedPlainTextPassword = "somepassword";
         }
 
@@ -114,9 +117,25 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
         }
 
         [Test]
+        public void ValidParametersShouldMapTrimmedUniqueNameProperly()
+        {
+            var actualUser = SignupService.CreateUser(" " + expectedUser.UniqueName + " ", expectedUser.DisplayName, expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
+
+            Assert.AreEqual(expectedUser.UniqueName, actualUser.UniqueName);
+        }
+
+        [Test]
         public void ValidParametersShouldMapDisplayNameProperly()
         {
             var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
+
+            Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
+        }
+
+        [Test]
+        public void ValidParametersShouldMapTrimmedDisplayNameProperly()
+        {
+            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, " " + expectedUser.DisplayName + " ", expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
 
             Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
         }
@@ -138,11 +157,35 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
         }
 
         [Test]
+        public void ValidParametersShouldMapTrimmedEmailProperly()
+        {
+            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, " " + expectedUser.Email + " ", expectedPlainTextPassword);
+
+            Assert.AreEqual(expectedUser.Email, actualUser.Email);
+        }
+
+        [Test]
         public void ValidParametersShouldMapDateCreatedToUtcNow()
         {
             var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
 
             Assert.AreEqual(DateTimeService.UtcNow, actualUser.DateCreated);
+        }
+
+        [Test]
+        public void ValidParametersShouldMapGuidToNewGuid()
+        {
+            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
+
+            Assert.AreEqual(GuidService.NewGuid(), actualUser.Guid);
+        }
+
+        [Test]
+        public void ValidParametersShouldMapPasswordHashToHashPassword()
+        {
+            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, expectedUser.Email, expectedPlainTextPassword);
+
+            Assert.AreEqual(expectedUser.PasswordHash, actualUser.PasswordHash);
         }
 
         [Test]

@@ -39,10 +39,6 @@ namespace BaffleTalk.Data.Context
                 .Property(m => m.PasswordHash)
                 .IsRequired();
 
-            modelBuilder.Entity<User>()
-                .Property(m => m.PasswordSalt)
-                .IsRequired();
-
             #endregion
 
             #region UserOauthData

@@ -11,11 +11,15 @@ namespace BaffleTalk.Services.Domain
     {
         private readonly BaffleTalkContext context;
         private readonly IDateTimeService dateTimeService;
+        private readonly IGuidService guidService;
+        private readonly IPasswordHashService passwordHashService;
 
-        public SignupService(BaffleTalkContext context, IDateTimeService dateTimeService)
+        public SignupService(BaffleTalkContext context, IDateTimeService dateTimeService, IGuidService guidService, IPasswordHashService passwordHashService)
         {
             this.context = context;
             this.dateTimeService = dateTimeService;
+            this.guidService = guidService;
+            this.passwordHashService = passwordHashService;
         }
 
         #region IMembershipService Members
@@ -52,13 +56,17 @@ namespace BaffleTalk.Services.Domain
             if (String.IsNullOrWhiteSpace(email)) throw new ArgumentNullException("email");
             if (String.IsNullOrWhiteSpace(password)) throw new ArgumentNullException("password");
 
+            Guid userGuid = guidService.NewGuid();
+
             var user = new User
                            {
-                               UniqueName = uniqueName,
-                               DisplayName = displayName,
-                               Email = email,
+                               Guid = userGuid,
+                               UniqueName = uniqueName.Trim(),
+                               DisplayName = displayName.Trim(),
+                               Email = email.Trim(),
                                BirthDate = birthDate,
                                DateCreated = dateTimeService.UtcNow,
+                               PasswordHash = passwordHashService.HashPassword(password, userGuid)
                            };
 
             context.Users.Add(user);

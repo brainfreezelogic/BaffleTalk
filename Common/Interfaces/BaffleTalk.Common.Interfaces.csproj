@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Services\Domain\IAuthenticationService.cs" />
     <Compile Include="Services\Domain\ISignupService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Utilities\IDateTimeService.cs" />

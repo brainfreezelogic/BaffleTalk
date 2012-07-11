@@ -22,11 +22,11 @@ namespace BaffleTalk.Services.Domain.Tests
 
                 var user = new User
                 {
-                    Email = "jerad@jader201.com",
-                    PasswordHash = "hash",
-                    PasswordSalt = "salt",
-                    DisplayName = "Jerad",
+                    Guid = new Guid("{FB86C4E1-DFCA-460D-96F2-485A9CDCC318}"),
                     UniqueName = "jader201",
+                    DisplayName = "Jerad",
+                    Email = "jerad@jader201.com",
+                    PasswordHash = "saltyhash",
                     BirthDate = new DateTime(1974, 10, 12),
                     DateCreated = dateTimeService.UtcNow,
                 };

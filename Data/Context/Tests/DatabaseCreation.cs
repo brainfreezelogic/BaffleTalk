@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
-using BaffleTalk.Data.Context;
 using BaffleTalk.Data.Entities.Membership;
 using NUnit.Framework;
 
-namespace Tests
+namespace BaffleTalk.Data.Context.Tests
 {
     [TestFixture]
     public class DatabaseCreation
@@ -14,7 +11,7 @@ namespace Tests
         [TestFixtureSetUp]
         public void Initialize()
         {
-            Database.SetInitializer<BaffleTalkContext>(new DropCreateDatabaseAlways<BaffleTalkContext>());
+            Database.SetInitializer(new DropCreateDatabaseAlways<BaffleTalkContext>());
         }
 
         [Test]
@@ -23,15 +20,15 @@ namespace Tests
             using (var context = new BaffleTalkContext())
             {
                 var user = new User
-                {
-                    Email = "jerad@jader201.com",
-                    DateCreated = new DateTime(2012, 7, 7, 1, 0, 0),
-                    DateUpdated = new DateTime(2012, 7, 7, 1, 0, 0),
-                    DisplayName = "Jerad Rose",
-                    PasswordHash = "hash",
-                    PasswordSalt = "salt",
-                    UniqueName = "jader201"
-                };
+                               {
+                                   Guid = new Guid("{CC89AB81-00BF-40D1-ABCC-8DE9A1EFDF93}"),
+                                   Email = "jerad@jader201.com",
+                                   BirthDate = new DateTime(1974, 10, 12),
+                                   DateCreated = new DateTime(2012, 7, 7, 1, 0, 0),
+                                   DisplayName = "Jerad Rose",
+                                   PasswordHash = "hash",
+                                   UniqueName = "jader201"
+                               };
 
                 context.Users.Add(user);
 
