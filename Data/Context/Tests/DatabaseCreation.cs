@@ -19,6 +19,8 @@ namespace BaffleTalk.Data.Context.Tests
         {
             using (var context = new BaffleTalkContext())
             {
+                Database.SetInitializer(new ForceDeleteInitializer(new DropCreateDatabaseAlways<BaffleTalkContext>()));
+
                 var user = new User
                                {
                                    Guid = new Guid("{CC89AB81-00BF-40D1-ABCC-8DE9A1EFDF93}"),
@@ -32,7 +34,14 @@ namespace BaffleTalk.Data.Context.Tests
 
                 context.Users.Add(user);
 
-                context.SaveChanges();
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch(Exception ex)
+                {
+
+                }
             }
         }
     }

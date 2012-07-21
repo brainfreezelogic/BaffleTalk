@@ -24,10 +24,6 @@ namespace BaffleTalk.Data.Context
             #region User
 
             modelBuilder.Entity<User>()
-                .Property(m => m.Email)
-                .IsRequired();
-
-            modelBuilder.Entity<User>()
                 .Property(m => m.UniqueName)
                 .IsRequired();
 
@@ -37,6 +33,14 @@ namespace BaffleTalk.Data.Context
 
             modelBuilder.Entity<User>()
                 .Property(m => m.PasswordHash)
+                .IsRequired();
+
+            #endregion
+
+            #region UserEmailConfirmation
+
+            modelBuilder.Entity<UserEmailConfirmation>()
+                .Property(m => m.Email)
                 .IsRequired();
 
             #endregion

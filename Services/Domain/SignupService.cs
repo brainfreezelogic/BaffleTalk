@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BaffleTalk.Common.Interfaces.Services.Domain;
 using BaffleTalk.Common.Interfaces.Services.Utilities;
@@ -63,11 +64,21 @@ namespace BaffleTalk.Services.Domain
                                Guid = userGuid,
                                UniqueName = uniqueName.Trim(),
                                DisplayName = displayName.Trim(),
-                               Email = email.Trim(),
+                               Email = null,
                                BirthDate = birthDate,
                                DateCreated = dateTimeService.UtcNow,
                                PasswordHash = passwordHashService.HashPassword(password, userGuid)
                            };
+
+            var emailConfirmation = new UserEmailConfirmation
+                                        {
+                                            Id = guidService.NewGuid(),
+                                            User = user,
+                                            Email = email.Trim(),
+                                            DateCreated = dateTimeService.UtcNow
+                                        };
+
+            user.UserEmailConfirmations = new List<UserEmailConfirmation> {emailConfirmation};
 
             context.Users.Add(user);
 

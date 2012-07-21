@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BaffleTalk.Data.Entities.Membership
 {
@@ -13,5 +14,7 @@ namespace BaffleTalk.Data.Entities.Membership
         public string PasswordHash { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
+
+        public List<UserEmailConfirmation> UserEmailConfirmations { get; set; }
     }
 }

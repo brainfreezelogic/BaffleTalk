@@ -10,14 +10,14 @@ namespace BaffleTalk.Services.Domain.Tests
         protected BaffleTalkContext Context;
         private TransactionScope transaction;
 
-        [TestFixtureSetUp]
+        [SetUp]
         public virtual void TestFixtureSetUp()
         {
             transaction = new TransactionScope();
             Context = new BaffleTalkContext(true);
         }
 
-        [TestFixtureTearDown]
+        [TearDown]
         public virtual void TestFixtureTearDown()
         {
             Context.Dispose();

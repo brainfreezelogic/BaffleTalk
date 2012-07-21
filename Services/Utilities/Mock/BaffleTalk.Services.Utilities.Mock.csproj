@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MockDeriveKey.cs" />
-    <Compile Include="MockGuidService.cs" />
     <Compile Include="MockSlidingDateTimeService.cs" />
     <Compile Include="MockStaticDateTimeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

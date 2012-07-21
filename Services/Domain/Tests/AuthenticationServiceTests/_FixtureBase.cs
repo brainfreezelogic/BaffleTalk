@@ -11,7 +11,7 @@ namespace BaffleTalk.Services.Domain.Tests.AuthenticationServiceTests
     {
         protected IAuthenticationService AuthenticationService;
 
-        [TestFixtureSetUp]
+        [SetUp]
         public override void TestFixtureSetUp()
         {
             var mockPasswordHash = new Mock<IPasswordHashService>();

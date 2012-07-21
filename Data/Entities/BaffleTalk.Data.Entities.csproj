@@ -42,6 +42,7 @@
     <Compile Include="Membership\OauthProvider.cs" />
     <Compile Include="Membership\OauthProviderValue.cs" />
     <Compile Include="Membership\User.cs" />
+    <Compile Include="Membership\UserEmailConfirmation.cs" />
     <Compile Include="Membership\UserOathData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
