@@ -62,6 +62,8 @@
   <ItemGroup>
     <Compile Include="AuthenticationServiceTests\AuthenticateUser.cs" />
     <Compile Include="AuthenticationServiceTests\_FixtureBase.cs" />
+    <Compile Include="ConfirmEmailServiceTests\ConfirmEmail.cs" />
+    <Compile Include="ConfirmEmailServiceTests\_FixtureBase.cs" />
     <Compile Include="TestContextExtensions.cs" />
     <Compile Include="_FixtureBase.cs" />
     <Compile Include="SignupServiceTests\CreateUser_ByEmail.cs" />
@@ -77,6 +79,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Exceptions\BaffleTalk.Common.Exceptions.csproj">
+      <Project>{A71EFED8-E78A-4B8F-90DF-005DA09131FE}</Project>
+      <Name>BaffleTalk.Common.Exceptions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Interfaces\BaffleTalk.Common.Interfaces.csproj">
       <Project>{395b4fba-3dff-4b12-bbd6-ac01fd40eff6}</Project>
       <Name>BaffleTalk.Common.Interfaces</Name>

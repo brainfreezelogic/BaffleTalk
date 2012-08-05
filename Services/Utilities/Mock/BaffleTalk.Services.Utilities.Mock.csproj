@@ -46,7 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Interfaces\BaffleTalk.Common.Interfaces.csproj">
-      <Project>{395B4FBA-3DFF-4B12-BBD6-AC01FD40EFF6}</Project>
+      <Project>{395b4fba-3dff-4b12-bbd6-ac01fd40eff6}</Project>
       <Name>BaffleTalk.Common.Interfaces</Name>
     </ProjectReference>
   </ItemGroup>

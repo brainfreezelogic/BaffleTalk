@@ -40,7 +40,7 @@ namespace BaffleTalk.Data.Context.Tests
                 }
                 catch(Exception ex)
                 {
-
+                    Assert.Fail(ex.Message);
                 }
             }
         }

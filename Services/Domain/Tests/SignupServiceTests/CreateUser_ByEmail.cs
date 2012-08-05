@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BaffleTalk.Common.Interfaces.Services.Utilities;
 using BaffleTalk.Data.Entities.Membership;
-using Moq;
 using NUnit.Framework;
 
 namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
 {
     [TestFixture]
-    public class CreateUser_ByEmail : SignupServiceTests._FixtureBase
+    public class CreateUser_ByEmail : _FixtureBase
     {
-        private User expectedUser;
-        private string newPassword;
-        private string newEmail;
+        #region Setup/Teardown
 
         [SetUp]
         public void TestFixtureSetup()
@@ -32,28 +28,199 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
             newPassword = "somepassword";
         }
 
+        #endregion
+
+        private User expectedUser;
+        private string newPassword;
+        private string newEmail;
+
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenNullUniqueName()
+        public void ShouldCreateSingleEmailConfirmationRecordWhenValid()
         {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(null, "displayName", new DateTime(2012, 1, 1), "email", "password"));
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.IsNotNull(actualUser.UserEmailConfirmations);
+            Assert.AreEqual(1, actualUser.UserEmailConfirmations.Count());
         }
 
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenEmptyUniqueName()
+        public void ShouldCreateUserIdAfterSaveWhenValid()
         {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(String.Empty, "displayName", new DateTime(2012, 1, 1), "email", "password"));
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+            Context.SaveChangesWithCatch();
+
+            Assert.AreNotEqual(0, actualUser.Id);
         }
 
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceUniqueName()
+        public void ShouldIncrementUserCountByOneWhenValid()
         {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(" ", "displayName", new DateTime(2012, 1, 1), "email", "password"));
+            int expected = Context.Users.Count() + 1;
+
+            SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+            Context.SaveChangesWithCatch();
+
+            int actual = Context.Users.Count();
+
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenNullDisplayName()
+        public void ShouldMapBirthDateWhenValid()
         {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", null, new DateTime(2012, 1, 1), "email", "password"));
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.BirthDate, actualUser.BirthDate);
+        }
+
+        [Test]
+        public void ShouldMapDateCreatedToUtcNowWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(DateTimeService.UtcNow, actualUser.DateCreated);
+        }
+
+        [Test]
+        public void ShouldMapDisplayNameWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
+        }
+
+        [Test]
+        public void ShouldMapGuidToNewGuidWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.Contains(actualUser.Guid, new List<Guid> { Guid1, Guid2 });
+        }
+
+        [Test]
+        public void ShouldMapPasswordHashToHashPasswordWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.PasswordHash, actualUser.PasswordHash);
+        }
+
+        [Test]
+        public void ShouldMapTrimmedDisplayNameWhenHasWhiteSpace()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, " " + expectedUser.DisplayName + " ", expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
+        }
+
+        [Test]
+        public void ShouldMapTrimmedUniqueNameWhenHasWhiteSpace()
+        {
+            User actualUser = SignupService.CreateUser(" " + expectedUser.UniqueName + " ", expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.UniqueName, actualUser.UniqueName);
+        }
+
+        [Test]
+        public void ShouldMapTrimmedUserEmailConfirmationUserEmailWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, " " + newEmail + " ", newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.AreEqual(newEmail, actualUser.UserEmailConfirmations.Single().Email);
+        }
+
+        [Test]
+        public void ShouldMapUniqueNameWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(expectedUser.UniqueName, actualUser.UniqueName);
+        }
+
+        [Test]
+        public void ShouldMapUserConfirmationEmailUserIdToUserUserIdAfterSaveWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+            Context.SaveChangesWithCatch();
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.AreEqual(actualUser.Id, actualUser.UserEmailConfirmations.Single().UserId);
+        }
+
+        [Test]
+        public void ShouldMapUserEmailConfirmationDateCreatedToDateTimeUtcNowWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.AreEqual(DateTimeService.UtcNow, actualUser.UserEmailConfirmations.Single().DateCreated);
+        }
+
+        [Test]
+        public void ShouldMapUserEmailConfirmationGuidWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.Contains(actualUser.UserEmailConfirmations.Single().Id, new List<Guid> { Guid1, Guid2 });
+        }
+
+        [Test]
+        public void ShouldMapUserEmailConfirmationUserEmailWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.AreEqual(newEmail, actualUser.UserEmailConfirmations.Single().Email);
+        }
+
+        [Test]
+        public void ShouldMapUserEmailConfirmationUserWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.AreEqual(actualUser, actualUser.UserEmailConfirmations.Single().User);
+        }
+
+        [Test]
+        public void ShouldReturnNullEmailWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            Assert.AreEqual(null, actualUser.Email);
+        }
+
+        [Test]
+        public void ShouldReturnNullUserEmailConfirmationDateConfirmedWhenValid()
+        {
+            User actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
+
+            Assert.IsNull(actualUser.UserEmailConfirmations.Single().DateConfirmed);
+        }
+
+        [Test]
+        public void ShouldSaveWithoutExceptionWhenValid()
+        {
+            SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
+
+            try
+            {
+                Context.SaveChangesWithCatch();
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
@@ -63,39 +230,9 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
         }
 
         [Test]
-        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceDisplayName()
-        {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", " ", new DateTime(2012, 1, 1), "email", "password"));
-        }
-
-        [Test]
-        public void ShouldThrowNullArgumentExceptionWhenMinValueBirthdate()
-        {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(), "email", "password"));
-        }
-
-        [Test]
-        public void ShouldThrowNullArgumentExceptionWhenNullEmail()
-        {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), null, "password"));
-        }
-
-        [Test]
         public void ShouldThrowNullArgumentExceptionWhenEmptyEmail()
         {
             Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), String.Empty, "password"));
-        }
-
-        [Test]
-        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceEmail()
-        {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), " ", "password"));
-        }
-
-        [Test]
-        public void ShouldThrowNullArgumentExceptionWhenNullPassword()
-        {
-            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), "email", null));
         }
 
         [Test]
@@ -105,199 +242,63 @@ namespace BaffleTalk.Services.Domain.Tests.SignupServiceTests
         }
 
         [Test]
+        public void ShouldThrowNullArgumentExceptionWhenEmptyUniqueName()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(String.Empty, "displayName", new DateTime(2012, 1, 1), "email", "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenMinValueBirthdate()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(), "email", "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenNullDisplayName()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", null, new DateTime(2012, 1, 1), "email", "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenNullEmail()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), null, "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenNullPassword()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), "email", null));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenNullUniqueName()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(null, "displayName", new DateTime(2012, 1, 1), "email", "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceDisplayName()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", " ", new DateTime(2012, 1, 1), "email", "password"));
+        }
+
+        [Test]
+        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceEmail()
+        {
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), " ", "password"));
+        }
+
+        [Test]
         public void ShouldThrowNullArgumentExceptionWhenWhiteSpacePassword()
         {
             Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser("uniqueName", "displayName", new DateTime(2012, 1, 1), "email", " "));
         }
 
         [Test]
-        public void ShouldMapUniqueNameWhenValid()
+        public void ShouldThrowNullArgumentExceptionWhenWhiteSpaceUniqueName()
         {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.UniqueName, actualUser.UniqueName);
+            Assert.Throws<ArgumentNullException>(() => SignupService.CreateUser(" ", "displayName", new DateTime(2012, 1, 1), "email", "password"));
         }
-
-        [Test]
-        public void ShouldMapTrimmedUniqueNameWhenHasWhiteSpace()
-        {
-            var actualUser = SignupService.CreateUser(" " + expectedUser.UniqueName + " ", expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.UniqueName, actualUser.UniqueName);
-        }
-
-        [Test]
-        public void ShouldMapDisplayNameWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
-        }
-
-        [Test]
-        public void ShouldMapTrimmedDisplayNameWhenHasWhiteSpace()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, " " + expectedUser.DisplayName + " ", expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.DisplayName, actualUser.DisplayName);
-        }
-
-        [Test]
-        public void ShouldMapBirthDateWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.BirthDate, actualUser.BirthDate);
-        }
-
-        [Test]
-        public void ShouldReturnNullEmailWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(null, actualUser.Email);
-        }
-
-        [Test]
-        public void ShouldMapDateCreatedToUtcNowWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(DateTimeService.UtcNow, actualUser.DateCreated);
-        }
-
-        [Test]
-        public void ShouldMapGuidToNewGuidWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.Contains(actualUser.Guid, new List<Guid>{ Guid1, Guid2 });
-        }
-
-        [Test]
-        public void ShouldMapPasswordHashToHashPasswordWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.AreEqual(expectedUser.PasswordHash, actualUser.PasswordHash);
-        }
-
-        [Test]
-        public void ShouldSaveWithoutExceptionWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            try
-            {
-                Context.SaveChangesWithCatch();
-            }
-            catch(Exception ex)
-            {
-
-            }
-        }
-
-        [Test]
-        public void ShouldCreateUserIdAfterSaveWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-            Context.SaveChangesWithCatch();
-
-            Assert.AreNotEqual(0, actualUser.Id);
-        }
-
-        [Test]
-        public void ShouldIncrementUserCountByOneWhenValid()
-        {
-            var expected = Context.Users.Count() + 1;
-
-            SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-            Context.SaveChangesWithCatch();
-
-            var actual = Context.Users.Count();
-
-            Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public void ShouldCreateSingleEmailConfirmationRecordWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            Assert.IsNotNull(actualUser.UserEmailConfirmations);
-            Assert.AreEqual(1, actualUser.UserEmailConfirmations.Count());
-        }
-
-        [Test]
-        public void ShouldMapUserEmailConfirmationGuidWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.Contains(actualUser.UserEmailConfirmations.Single().Id, new List<Guid> { Guid1, Guid2 });
-        }
-
-        [Test]
-        public void ShouldMapUserEmailConfirmationUserWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.AreEqual(actualUser, actualUser.UserEmailConfirmations.Single().User);
-        }
-
-        [Test]
-        public void ShouldMapUserEmailConfirmationUserEmailWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.AreEqual(newEmail, actualUser.UserEmailConfirmations.Single().Email);
-        }
-
-        [Test]
-        public void ShouldMapTrimmedUserEmailConfirmationUserEmailWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, " " + newEmail + " ", newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.AreEqual(newEmail, actualUser.UserEmailConfirmations.Single().Email);
-        }
-
-        [Test]
-        public void ShouldMapUserEmailConfirmationDateCreatedToDateTimeUtcNowWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.AreEqual(DateTimeService.UtcNow, actualUser.UserEmailConfirmations.Single().DateCreated);
-        }
-
-        [Test]
-        public void ShouldReturnNullUserEmailConfirmationDateConfirmedWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.IsNull(actualUser.UserEmailConfirmations.Single().DateConfirmed);
-        }
-
-        [Test]
-        public void ShouldMapUserConfirmationEmailUserIdToUserUserIdAfterSaveWhenValid()
-        {
-            var actualUser = SignupService.CreateUser(expectedUser.UniqueName, expectedUser.DisplayName, expectedUser.BirthDate, newEmail, newPassword);
-            Context.SaveChangesWithCatch();
-
-            if (actualUser.UserEmailConfirmations == null || actualUser.UserEmailConfirmations.Count() != 1) Assert.Inconclusive("");
-
-            Assert.AreEqual(actualUser.Id, actualUser.UserEmailConfirmations.Single().UserId);
-        }
-
     }
 }

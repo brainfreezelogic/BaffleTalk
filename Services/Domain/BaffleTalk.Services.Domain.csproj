@@ -43,10 +43,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AuthenticationService.cs" />
+    <Compile Include="ConfirmEmailService.cs" />
     <Compile Include="SignupService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\Exceptions\BaffleTalk.Common.Exceptions.csproj">
+      <Project>{a71efed8-e78a-4b8f-90df-005da09131fe}</Project>
+      <Name>BaffleTalk.Common.Exceptions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\Interfaces\BaffleTalk.Common.Interfaces.csproj">
       <Project>{395B4FBA-3DFF-4B12-BBD6-AC01FD40EFF6}</Project>
       <Name>BaffleTalk.Common.Interfaces</Name>

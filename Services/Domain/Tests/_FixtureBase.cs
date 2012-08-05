@@ -1,5 +1,8 @@
-﻿using System.Transactions;
+﻿using System;
+using System.Transactions;
+using BaffleTalk.Common.Interfaces.Services.Utilities;
 using BaffleTalk.Data.Context;
+using BaffleTalk.Services.Utilities.Mock;
 using NUnit.Framework;
 
 namespace BaffleTalk.Services.Domain.Tests
@@ -8,13 +11,16 @@ namespace BaffleTalk.Services.Domain.Tests
     public abstract class _FixtureBase
     {
         protected BaffleTalkContext Context;
+        protected IDateTimeService DateTimeService;
         private TransactionScope transaction;
 
         [SetUp]
-        public virtual void TestFixtureSetUp()
+        public virtual void SetUp()
         {
             transaction = new TransactionScope();
             Context = new BaffleTalkContext(true);
+
+            DateTimeService = new MockStaticDateTimeService(new DateTime(2012, 7, 8, 14, 23, 29));
         }
 
         [TearDown]

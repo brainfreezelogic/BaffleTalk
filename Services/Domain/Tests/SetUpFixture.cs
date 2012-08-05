@@ -28,6 +28,28 @@ namespace BaffleTalk.Services.Domain.Tests
                                };
 
                 startupContext.Users.Add(user);
+
+                var confirmedEmailConfirmation = new UserEmailConfirmation
+                                                {
+                                                    User = user,
+                                                    Id = new Guid("{9FAB1A9D-5DA5-429E-9339-DF8C8D468ACB}"),
+                                                    DateCreated = new DateTime(2012, 7, 5, 11, 05, 23),
+                                                    DateConfirmed = new DateTime(2012, 7, 6, 11, 05, 23),
+                                                    Email = "jerad@jader201.com"
+                                                };
+
+                startupContext.UserEmailConfirmations.Add(confirmedEmailConfirmation);
+
+                var unconfirmedEmailConfirmation = new UserEmailConfirmation
+                                                {
+                                                    User = user,
+                                                    Id = new Guid("{0422FB37-6F5A-4068-9EF0-D53B6709398D}"),
+                                                    DateCreated = new DateTime(2012, 7, 5, 11, 05, 23),
+                                                    DateConfirmed = null,
+                                                    Email = "jerad@jader201.com"
+                                                };
+
+                startupContext.UserEmailConfirmations.Add(unconfirmedEmailConfirmation);
             }
         }
     }

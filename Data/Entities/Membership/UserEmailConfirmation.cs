@@ -10,6 +10,6 @@ namespace BaffleTalk.Data.Entities.Membership
         public DateTime DateCreated { get; set; }
         public DateTime? DateConfirmed { get; set; }
 
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

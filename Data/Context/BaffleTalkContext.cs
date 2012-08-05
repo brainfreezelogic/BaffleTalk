@@ -10,7 +10,8 @@ namespace BaffleTalk.Data.Context
 
         public DbSet<User> Users { get; set; }
         public DbSet<UserOathData> UserOathData { get; set; }
-        public DbSet<OauthProvider> OauthProvider { get; set; }
+        public DbSet<OauthProvider> OauthProviders { get; set; }
+        public DbSet<UserEmailConfirmation> UserEmailConfirmations { get; set; }
 
         public BaffleTalkContext() : this(false) { }
 
